@@ -1,5 +1,7 @@
-mod types;
 mod database_service;
+mod types;
+use crate::database_service::{get_post_by_id_or_title, posts, upload_post};
+use crate::types::types::{CreatePostRequest, Post};
 use axum::{
     http,
     routing::{get, post},
@@ -8,8 +10,6 @@ use axum::{
 use sqlx::mysql::MySqlPoolOptions;
 use tower::ServiceBuilder;
 use tower_http::cors::{Any, CorsLayer};
-use crate::types::types::{ CreatePostRequest, Post };
-use crate::database_service::{ get_post_by_id_or_title, posts, upload_post };
 
 #[tokio::main]
 async fn main() {
@@ -27,6 +27,7 @@ async fn main() {
         .route("/posts", get(posts))
         .route("/posts/:id_or_title", get(get_post_by_id_or_title))
         .route("/posts", post(upload_post))
+        .route("/posts/delete/:id", post(database_service::delete_post))
         .layer(ServiceBuilder::new().layer(cors))
         .with_state(pool);
 

@@ -47,6 +47,21 @@ pub async fn upload_post(
         .expect("Cannot insert post");
 }
 
+pub async fn delete_post(
+    State(pool): State<MySqlPool>,
+    Path(id): Path<u32>,
+    Json(auth_token): Json<String>,
+) {
+    if !validate_auth_token(auth_token) {
+        return;
+    }
+    sqlx::query("DELETE FROM posts WHERE post_id = ?")
+        .bind(id)
+        .execute(&pool)
+        .await
+        .expect("Cannot delete post");
+}
+
 fn validate_auth_token(auth_token: String) -> bool {
     auth_token == "bFIooII561RZeUgntImunCTFVYirieSjmMARdDmWOSFFFAeTGFw5aAvhSKOET6h58weJ3y0O96mDKmpNDfHqinxWaUEImtLNIr5m2scQ6HdJ7NB1lzGcuLt4fOUXxa5a"
 }
