@@ -1,5 +1,5 @@
 use axum::extract::{ Json, Path, State };
-use crate::{ CreatePostRequest, Post };
+use crate::types::{ CreatePostRequest, Post };
 use sqlx::mysql::MySqlPool;
 
 pub async fn posts(State(pool): State<MySqlPool>) -> axum::Json<Vec<Post>> {

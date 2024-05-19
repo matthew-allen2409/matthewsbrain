@@ -1,7 +1,5 @@
 mod database_service;
 mod types;
-use crate::database_service::{get_post_by_id_or_title, posts, upload_post};
-use crate::types::types::{CreatePostRequest, Post};
 use axum::{
     http,
     routing::{get, post},
@@ -24,9 +22,9 @@ async fn main() {
         .allow_origin(Any);
 
     let app = Router::new()
-        .route("/posts", get(posts))
-        .route("/posts/:id_or_title", get(get_post_by_id_or_title))
-        .route("/posts", post(upload_post))
+        .route("/posts", get(database_service::posts))
+        .route("/posts/:id_or_title", get(database_service::get_post_by_id_or_title))
+        .route("/posts", post(database_service::upload_post))
         .route("/posts/delete/:id", post(database_service::delete_post))
         .layer(ServiceBuilder::new().layer(cors))
         .with_state(pool);
