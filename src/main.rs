@@ -18,7 +18,7 @@ async fn main() {
         .expect("Cannot connect to database");
 
     let cors = CorsLayer::new()
-        .allow_methods([http::Method::GET])
+        .allow_methods([http::Method::GET, http::Method::POST])
         .allow_origin(Any);
 
     let app = Router::new()
