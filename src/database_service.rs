@@ -1,5 +1,10 @@
 use axum::extract::{ Json, Path, State };
-use crate::types::{ CreatePostRequest, Post, CommentInput };
+use crate::types::{
+    CreatePostRequest,
+    Post,
+    CommentInput,
+    Comment,
+};
 use sqlx::mysql::MySqlPool;
 
 pub async fn posts(State(pool): State<MySqlPool>) -> axum::Json<Vec<Post>> {
@@ -74,6 +79,19 @@ pub async fn upload_comment(
         .execute(&pool)
         .await
         .expect("Cannot insert comment");
+}
+
+pub async fn get_comments_by_post_id(
+    State(pool): State<MySqlPool>,
+    Path(post_id): Path<u32>,
+) -> axum::Json<Vec<Comment>> {
+    let result = sqlx::query_as::<_, Comment>("Select * from comments where post_id = ?")
+        .bind(post_id)
+        .fetch_all(&pool)
+        .await
+        .expect("Cannot fetch comments");
+
+    axum::Json(result)
 }
 
 fn validate_auth_token(auth_token: String) -> bool {
