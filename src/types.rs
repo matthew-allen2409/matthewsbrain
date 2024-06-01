@@ -13,3 +13,11 @@ pub struct CreatePostRequest {
     pub post: Post,
     pub auth_token: String,
 }
+
+#[derive(serde::Deserialize)]
+pub struct CommentInput {
+    pub post_id: i32,
+    pub email: String,
+    pub name: String,
+    pub comment: String,
+}

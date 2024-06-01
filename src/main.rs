@@ -26,6 +26,7 @@ async fn main() {
         .route("/posts/:id_or_title", get(database_service::get_post_by_id_or_title))
         .route("/posts", post(database_service::upload_post))
         .route("/posts/delete/:id", post(database_service::delete_post))
+        .route("/comments", post(database_service::upload_comment))
         .layer(ServiceBuilder::new().layer(cors))
         .with_state(pool);
 

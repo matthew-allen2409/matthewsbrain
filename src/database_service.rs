@@ -1,5 +1,5 @@
 use axum::extract::{ Json, Path, State };
-use crate::types::{ CreatePostRequest, Post };
+use crate::types::{ CreatePostRequest, Post, CommentInput };
 use sqlx::mysql::MySqlPool;
 
 pub async fn posts(State(pool): State<MySqlPool>) -> axum::Json<Vec<Post>> {
@@ -60,6 +60,20 @@ pub async fn delete_post(
         .execute(&pool)
         .await
         .expect("Cannot delete post");
+}
+
+pub async fn upload_comment(
+    State(pool): State<MySqlPool>,
+    Json(comment): Json<CommentInput>,
+) {
+    sqlx::query("INSERT INTO comments (post_id, email, name, comment) values (?, ?, ?, ?)")
+        .bind(comment.post_id)
+        .bind(comment.email)
+        .bind(comment.name)
+        .bind(comment.comment)
+        .execute(&pool)
+        .await
+        .expect("Cannot insert comment");
 }
 
 fn validate_auth_token(auth_token: String) -> bool {
