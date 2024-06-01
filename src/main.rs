@@ -19,7 +19,8 @@ async fn main() {
 
     let cors = CorsLayer::new()
         .allow_methods([http::Method::GET, http::Method::POST])
-        .allow_origin(Any);
+        .allow_origin(Any)
+        .allow_headers([http::header::CONTENT_TYPE]);
 
     let app = Router::new()
         .route("/posts", get(database_service::posts))
