@@ -70,17 +70,15 @@ pub async fn delete_post(
 pub async fn upload_comment(
     State(pool): State<MySqlPool>,
     Json(comment): Json<CommentInput>,
-) -> axum::Json<Comment> {
-    let result = sqlx::query_as::<_, Comment>("INSERT INTO comments (post_id, email, name, comment) values (?, ?, ?, ?)")
+) {
+    let result = sqlx::query("INSERT INTO comments (post_id, email, name, comment) values (?, ?, ?, ?)")
         .bind(comment.post_id)
         .bind(comment.email)
         .bind(comment.name)
         .bind(comment.comment)
-        .fetch_one(&pool)
+        .execute(&pool)
         .await
         .expect("Cannot insert comment");
-
-    axum::Json(result)
 }
 
 pub async fn get_comments_by_post_id(
