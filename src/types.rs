@@ -22,10 +22,8 @@ pub struct CommentInput {
     pub comment: String,
 }
 
-#[derive(sqlx::FromRow, serde::Serialize, serde::Deserialize)]
+#[derive(sqlx::FromRow, serde::Serialize)]
 pub struct Comment {
-    pub post_id: i32,
-    pub email: String,
     pub name: String,
     pub comment: String,
     pub created_at: chrono::DateTime<chrono::Utc>,

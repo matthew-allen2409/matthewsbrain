@@ -71,7 +71,7 @@ pub async fn upload_comment(
     State(pool): State<MySqlPool>,
     Json(comment): Json<CommentInput>,
 ) {
-    let result = sqlx::query("INSERT INTO comments (post_id, email, name, comment) values (?, ?, ?, ?)")
+    sqlx::query("INSERT INTO comments (post_id, email, name, comment) values (?, ?, ?, ?)")
         .bind(comment.post_id)
         .bind(comment.email)
         .bind(comment.name)
