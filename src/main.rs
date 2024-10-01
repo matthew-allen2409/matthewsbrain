@@ -23,6 +23,7 @@ async fn main() {
         .allow_headers([http::header::CONTENT_TYPE]);
 
     let app = Router::new()
+        .route("/analytics:post_id", post(database_service::increment_view_count))
         .route("/posts", get(database_service::posts))
         .route("/posts/:id_or_title", get(database_service::get_post_by_id_or_title))
         .route("/posts", post(database_service::upload_post))

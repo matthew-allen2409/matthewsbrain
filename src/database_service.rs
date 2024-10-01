@@ -33,13 +33,18 @@ pub async fn get_post_by_id_or_title(
             .expect("Cannot fetch post by title"),
     };
 
+    axum::Json(result)
+}
+
+pub async fn increment_view_count(
+    State(pool): State<MySqlPool>,
+    Path(post_id): Path<u32>,
+) {
     sqlx::query("UPDATE posts SET view_count = view_count + 1 WHERE post_id = ?")
-        .bind(result.post_id)
+        .bind(post_id)
         .execute(&pool)
         .await
-        .expect("Cannot update views");
-
-    axum::Json(result)
+        .expect("Cannot increment view count");
 }
 
 pub async fn upload_post(
