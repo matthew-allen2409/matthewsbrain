@@ -1,13 +1,14 @@
 use axum::extract::{ Json, Path, State };
-use crate::types::{
-    CreatePostRequest,
-    Post,
-    CommentInput,
-    Comment,
+use crate::{
+    schema::CreatePostRequest,
+    models::Post,
+    schema::CommentInput,
+    models::Comment,
 };
 use sqlx::mysql::MySqlPool;
 
 pub async fn posts(State(pool): State<MySqlPool>) -> axum::Json<Vec<Post>> {
+    println!("Fetching posts");
     let result = sqlx::query_as::<_, Post>("Select * from posts")
         .fetch_all(&pool)
         .await
@@ -81,15 +82,18 @@ pub async fn delete_post(
 pub async fn upload_comment(
     State(pool): State<MySqlPool>,
     Json(comment): Json<CommentInput>,
-) {
+) -> axum::Json<Comment> {
+    println!("Uploading comment: {:?}", comment);
     sqlx::query("INSERT INTO comments (post_id, email, name, comment) values (?, ?, ?, ?)")
-        .bind(comment.post_id)
-        .bind(comment.email)
-        .bind(comment.name)
-        .bind(comment.comment)
+        .bind(&comment.post_id)
+        .bind(&comment.email)
+        .bind(&comment.name)
+        .bind(&comment.comment)
         .execute(&pool)
         .await
         .expect("Cannot insert comment");
+
+    axum::Json(Comment::from(comment))
 }
 
 pub async fn get_comments_by_post_id(
