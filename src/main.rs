@@ -4,7 +4,7 @@ use blog_controller::initializer::DBConfig;
 #[tokio::main]
 async fn main() {
     let config = DBConfig {
-        max_connections: 5,
+        max_connections: 50,
         user: String::from("app"),
         password: String::from("xauY5.B;<E*X~+y%"),
         host: String::from("localhost"),
@@ -15,8 +15,6 @@ async fn main() {
     let host = "localhost";
     let port = "8080";
     let address = format!("{host}:{port}");
-    println!("Listening on {address}");
-    
-    let listener = tokio::net::TcpListener::bind(address).await.unwrap();
+    let listener = initializer::initialize_listener(address).await;
     axum::serve(listener, router).await.unwrap();
 }

@@ -27,13 +27,13 @@ pub async fn initialize_router(config: DBConfig) -> Router {
         .allow_headers([http::header::CONTENT_TYPE]);
 
     Router::new()
-        .route("/analytics:post_id", post(database_service::increment_view_count))
-        .route("/posts", get(database_service::posts))
-        .route("/posts/:id_or_title", get(database_service::get_post_by_id_or_title))
-        .route("/posts", post(database_service::upload_post))
-        .route("/posts/delete/:id", post(database_service::delete_post))
-        .route("/comments", post(database_service::upload_comment))
-        .route("/comments/:post_id", get(database_service::get_comments_by_post_id))
+        .route("/analytics:post_id", post(database_service::posts::increment_view_count))
+        .route("/posts", get(database_service::posts::posts))
+        .route("/posts/:id_or_title", get(database_service::posts::get_post_by_id_or_title))
+        .route("/posts", post(database_service::posts::upload_post))
+        .route("/posts/delete/:id", post(database_service::posts::delete_post))
+        .route("/comments", post(database_service::comments::upload_comment))
+        .route("/comments/:post_id", get(database_service::comments::get_comments_by_post_id))
         .layer(ServiceBuilder::new().layer(cors))
         .with_state(pool)
 }
@@ -51,5 +51,12 @@ async fn initialize_database(config: DBConfig) -> Result<sqlx::Pool<sqlx::MySql>
         .await;
     
     pool
+}
+
+pub async fn initialize_listener(address: String) -> tokio::net::TcpListener {
+    println!("Listening on {address}");
+
+    tokio::net::TcpListener::bind(&address).await
+        .expect(&format!("Cannot bind to {address}"))
 }
 
