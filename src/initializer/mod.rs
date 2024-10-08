@@ -1,4 +1,4 @@
-use crate::database_service;
+use crate::handler;
 use axum::{
     http,
     routing::{get, post},
@@ -21,19 +21,15 @@ pub async fn initialize_router(config: DBConfig) -> Router {
         .await
         .expect("Cannot connect to database");
 
-    let cors = CorsLayer::new()
-        .allow_methods([http::Method::GET, http::Method::POST])
-        .allow_origin(Any)
-        .allow_headers([http::header::CONTENT_TYPE]);
+    let cors = initialize_cors();
 
     Router::new()
-        .route("/analytics:post_id", post(database_service::posts::increment_view_count))
-        .route("/posts", get(database_service::posts::posts))
-        .route("/posts/:id_or_title", get(database_service::posts::get_post_by_id_or_title))
-        .route("/posts", post(database_service::posts::upload_post))
-        .route("/posts/delete/:id", post(database_service::posts::delete_post))
-        .route("/comments", post(database_service::comments::upload_comment))
-        .route("/comments/:post_id", get(database_service::comments::get_comments_by_post_id))
+        .route("/posts", get(handler::post::posts))
+        .route("/posts/:id_or_title", get(handler::post::get_post_by_id))
+        .route("/posts", post(handler::post::upload_post))
+        .route("/posts/delete/:id", post(handler::post::delete_post))
+        .route("/comments", post(handler::comment::upload_comment))
+        .route("/comments/:post_id", get(handler::comment::get_comments_by_post_id))
         .layer(ServiceBuilder::new().layer(cors))
         .with_state(pool)
 }
@@ -51,6 +47,13 @@ async fn initialize_database(config: DBConfig) -> Result<sqlx::Pool<sqlx::MySql>
         .await;
     
     pool
+}
+
+fn initialize_cors() -> CorsLayer {
+    CorsLayer::new()
+        .allow_methods([http::Method::GET, http::Method::POST])
+        .allow_origin(Any)
+        .allow_headers([http::header::CONTENT_TYPE])
 }
 
 pub async fn initialize_listener(address: String) -> tokio::net::TcpListener {

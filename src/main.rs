@@ -10,11 +10,11 @@ async fn main() {
         host: String::from("localhost"),
         database: String::from("blog"),
     };
-    let router = initializer::initialize_router(config).await;
 
     let host = "localhost";
     let port = "8080";
     let address = format!("{host}:{port}");
     let listener = initializer::initialize_listener(address).await;
+    let router = initializer::initialize_router(config).await;
     axum::serve(listener, router).await.unwrap();
 }
