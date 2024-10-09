@@ -1,9 +1,9 @@
 use blog_controller::initializer;
-use blog_controller::initializer::DBConfig;
+use blog_controller::initializer::database::DBConfig;
 
 #[tokio::main]
 async fn main() {
-    let config = DBConfig {
+    let db_config = DBConfig {
         max_connections: 50,
         user: String::from("app"),
         password: String::from("xauY5.B;<E*X~+y%"),
@@ -14,7 +14,7 @@ async fn main() {
     let host = "localhost";
     let port = "8080";
     let address = format!("{host}:{port}");
-    let listener = initializer::initialize_listener(address).await;
-    let router = initializer::initialize_router(config).await;
-    axum::serve(listener, router).await.unwrap();
+    let config = initializer::ApplicationConfig { address, db_config };
+
+    initializer::initialize(config).await;
 }
