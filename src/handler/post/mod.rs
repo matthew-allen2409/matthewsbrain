@@ -17,9 +17,9 @@ pub async fn posts(State(pool): State<MySqlPool>) -> axum::Json<Vec<Post>> {
 
 pub async fn get_post_by_id(
     State(pool): State<MySqlPool>,
-    Path(post_id): Path<u32>,
+    Path(post_id): Path<i32>,
 ) -> axum::Json<Post> {
-    let result = database_service::posts::get_post_by_id(pool, post_id).await;
+    let result = database_service::posts::get_post_by_id(&pool, post_id).await.unwrap();
 
     axum::Json(result)
 }

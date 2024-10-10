@@ -1,3 +1,5 @@
+use crate::handler::CommentInput;
+
 #[derive(sqlx::FromRow, serde::Serialize, serde::Deserialize)]
 pub struct Post {
     #[serde(default)]
@@ -15,4 +17,16 @@ pub struct Comment {
     pub name: String,
     pub comment: String,
     pub created_at: chrono::DateTime<chrono::Utc>,
+}
+
+impl Comment {
+    pub fn from(input: CommentInput) -> Comment {
+        Comment {
+            post_id: input.post_id,
+            email: input.email,
+            name: input.name,
+            comment: input.comment,
+            created_at: chrono::Utc::now(),
+        }
+    }
 }

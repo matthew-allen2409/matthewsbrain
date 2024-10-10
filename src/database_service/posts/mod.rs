@@ -8,12 +8,11 @@ pub async fn posts(pool: MySqlPool) -> Vec<Post> {
         .expect("Cannot fetch posts")
 }
 
-pub async fn get_post_by_id(pool: MySqlPool, id: u32) -> Post {
-    sqlx::query_as::<_, Post>("Select * from posts where post_id = ?")
+pub async fn get_post_by_id(pool: &MySqlPool, id: i32) -> Result<Post, sqlx::Error> {
+    sqlx::query_as::<_, Post>("SELECT * FROM posts WHERE post_id = ?")
         .bind(id)
-        .fetch_one(&pool)
+        .fetch_one(pool)
         .await
-        .expect("Cannot fetch post by id")
 }
 
 pub async fn upload_post(pool: MySqlPool, post: &Post) {
