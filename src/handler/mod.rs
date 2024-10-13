@@ -1,5 +1,6 @@
 pub mod post;
 pub mod comment;
+pub mod rss;
 
 #[derive(serde::Deserialize, Debug)]
 pub struct CommentInput {

@@ -1,5 +1,5 @@
 use crate::handler::CommentInput;
-use rss::Item;
+use rss::{ Item, ItemBuilder };
 
 #[derive(sqlx::FromRow, serde::Serialize, serde::Deserialize)]
 pub struct Post {
@@ -12,14 +12,13 @@ pub struct Post {
 }
 
 impl Post {
-    pub fn to_rss_item(&self) -> Item {
+    pub fn to_rss_item(self) -> Item {
         let id = self.post_id.unwrap().to_string();
         let mut item = Item::default();
-        item.set_title(self.title.to_string());
-        item.set_content(self.content.to_string());
+        item.set_title(self.title);
+        item.set_content(self.content);
         item.set_link(format!("https://matthewsbrain.com/post/{id}"));
-        item.set_author("matthew.allen@matthewsbrain.com".to_string());
-        item.set_pub_date(self.created_at.unwrap().to_string());
+        item.set_author("matthew.allen@matthewsbrain.com");
 
         item
     }
